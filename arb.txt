@@ -1,0 +1,189 @@
+module arbiter 
+( 
+input clk,
+input REQ_A, 
+input REQ_B, 
+input REQ_C,
+input REQ_D,
+input frame_low,
+output reg GNT_A, 
+output reg GNT_B, 
+output reg GNT_C,
+output reg GNT_D
+);
+////////////////////////////////////////////Active looooooooooooooooooowhhhhhhhhhhhhhhhhhhhhhhh
+reg [1:0] next_master;// the next one to get the bus
+integer i; // counter in for loop
+reg [0:0] mem [0:3]; // queue the requests
+
+always @ (posedge clk)
+begin
+
+if(REQ_A==0)
+begin
+mem[0][0]<=REQ_A;
+end
+
+
+if(REQ_B==0)
+begin
+mem[1][0]<=REQ_B;
+end
+
+
+if(REQ_C==0)
+begin
+mem[2][0]<=REQ_C;
+end
+
+
+if(REQ_D==0)
+begin
+mem[3][0]<=REQ_D;
+end
+
+for(i=3;i>=0;i=i-1)
+begin
+ if(mem[i][0]==0)
+  begin
+    next_master<=i;
+  end
+end
+mem[next_master][0]<=1;
+
+end
+
+
+always @ (negedge clk )
+begin
+
+if(frame_low==1)
+begin
+
+  if(REQ_A==0)
+  begin
+  GNT_A <= 0;
+  GNT_B <= 1;
+  GNT_C <= 1;
+  GNT_D <= 1;
+  end
+
+ else if(REQ_B==0)
+  begin
+  GNT_A <= 1;
+  GNT_B <= 0;
+  GNT_C <= 1;
+  GNT_D <= 1;
+  end
+
+ else if(REQ_C==0)
+  begin
+  GNT_A <= 1;
+  GNT_B <= 1;
+  GNT_C <= 0;
+  GNT_D <= 1;
+  end
+
+  else if(REQ_D==0)
+  begin
+  GNT_A <= 1;
+  GNT_B <= 1;
+  GNT_C <= 1;
+  GNT_D <= 0;
+  end
+
+end
+end
+
+always @ (posedge frame_low )
+begin
+case(next_master)
+0: begin 
+GNT_A <= 0;
+GNT_B <= 1;
+GNT_C <= 1;
+GNT_D <= 1; 
+end
+
+1: begin
+GNT_A <= 1;
+GNT_B <= 0;
+GNT_C <= 1;
+GNT_D <= 1;
+end
+
+2: begin
+GNT_A <= 1;
+GNT_B <= 1;
+GNT_C <= 0;
+GNT_D <= 1;
+end
+
+3: begin
+GNT_A <= 1;
+GNT_B <= 1;
+GNT_C <= 1;
+GNT_D <= 0;
+end
+endcase
+
+end
+
+endmodule
+
+module shawqy ();
+reg clk;
+reg REQ_A;
+reg REQ_B;
+reg REQ_C;
+reg REQ_D;
+reg frame_low;
+wire GNT_A; 
+wire GNT_B; 
+wire GNT_C;
+wire GNT_D;
+arbiter A (clk, REQ_A, REQ_B, REQ_C, REQ_D, frame_low, GNT_A, GNT_B, GNT_C, GNT_D);
+
+initial
+begin
+$monitor ("REQ_A= %d GNT_A= %d, REQ_B= %d GNT_B= %d REQ_C= %d GNT_C= %d", REQ_A, GNT_A, REQ_B, GNT_B, REQ_C, GNT_C);
+clk=1;
+frame_low = 0;
+
+
+REQ_A = 0;
+REQ_B = 0;
+REQ_C = 1;
+REQ_D = 1;
+#100
+REQ_A = 1;
+REQ_B = 1;
+REQ_C = 1;
+REQ_D = 1;
+/*
+#120
+REQ_A = 1;
+REQ_B = 1;
+REQ_C = 0;
+REQ_D = 0;
+
+#200
+REQ_A = 0;
+
+REQ_C = 0;
+*/
+end
+
+always
+begin
+#50
+clk =~ clk;
+end
+
+always
+begin
+#50
+frame_low =~ frame_low;
+end
+
+endmodule
