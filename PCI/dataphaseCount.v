@@ -30,39 +30,42 @@ output reg done
 reg [1:0] counter;
 
 always @ ( clk)
-begin
-if (clk)
 	begin
-	if (data_c)
-	begin
-	counter <= CBE;
 
-	end //if
-	else 
-	begin
-		if((~IRDY) && (~TRDY))
+		if (clk)
 			begin
-			if(counter!=1'b0)
-			begin
-			counter <= counter - 1;
-			end
-			end
+				if (data_c)
+				begin
+				counter <= CBE;
+				end //if
+				else  
+				begin
+					if((~IRDY) && (~TRDY))
+						begin
+							if(counter!=1'b0)
+								begin
+								counter <= counter - 1;
+								end
+						end
+					else 
+					begin
+					done <= 1'b0;
+					end
+	
+		end //else
+	end
+		
 		else 
 			begin
-			done <= 1'b0;
-			end
-
-	end //else
-end
-else 
-begin
 
 		if (counter == 1)
 		begin
 		done <= 1'b1;
 		end 
 	
-end 
+			end
+
+ 
 end // always
 
 

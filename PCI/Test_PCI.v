@@ -206,13 +206,14 @@ PCI_DEV  D (
 
 
 //arbiter Instance
-arbiter_1  Arbiter(
-    .clk(CLK), 
+arbiter_2 Arbiter (
+    .clk(clk), 
     .REQ_A(REQ_A), 
     .REQ_B(REQ_B), 
     .REQ_C(REQ_C), 
     .REQ_D(REQ_D), 
-    .frame_low(Frame), 
+    .frame_low(frame_low), 
+    .IRDY(IRDY), 
     .GNT_A(GNT_A), 
     .GNT_B(GNT_B), 
     .GNT_C(GNT_C), 

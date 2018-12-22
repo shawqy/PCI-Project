@@ -29,9 +29,10 @@
 	);
 
 
-always@ ( posedge CLK)
+always@ ( done ,CLK)
 begin
-
+if (CLK)
+begin
 if ( GNT == 0 && IDsel == 1)
 	begin
 		S_M <= 1'b1;
@@ -44,29 +45,13 @@ else if( GNT == 1 && IDsel == 0)
 		Frame <= 1'b1;
 
 	end
-else
+	end
+else if (done)
 begin
-		S_M <= 1'bz;
-
-end
-end
-
-
-always @(done)
-begin
-
-if ( done == 1'b1)
-begin
+S_M <= 1'b0;
 Frame <= 1'b1;
 end
-else 
-begin
-Frame <= 1'b1;
 end
-
-end
-
-
 
 
 

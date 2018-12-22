@@ -33,7 +33,7 @@ module Write_Read(
 
 assign C_BE = (S_M)? C_BE_Contact : 8'hzz;
 
-assign IRDY = devsel ? 1'b1 : 1'b0 ;
+assign IRDY = (S_M)?(devsel ? 1'b1 : 1'b0) : 1'bz ;
 
 
 
