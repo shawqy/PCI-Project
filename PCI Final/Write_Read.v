@@ -33,21 +33,21 @@ module Write_Read(
 
 assign C_BE = (S_M)? C_BE_Contact : 8'hzz;
 
-assign IRDY = (S_M)?(devsel ? 1'b1 : 1'b0) : 1'bz ;
+assign IRDY = dev ? 1'b1 : 1'b0 ;
 
-
+reg dev;
 
 
 always @(posedge clk)
 begin
-	if (devsel == 1'b1)
+	if (dev == 1'b1)
 	begin
 	if (S_M == 1'b1)
 	begin
 		casez (C_BE)
 		4'bzz00 : begin
 		Data_count <= 1'b1 ;
-		R_W <= 1'b1 ;// leh da
+		R_W <= 1'b1 ;
 		end
 		//write
 		4'b0011: begin
@@ -59,7 +59,11 @@ begin
 		Data_count <= 1'b0 ;
 		R_W <= 1'b0 ;
 		end
-		
+		default
+		begin
+		Data_count <= 1'b0 ;
+		R_W <= 1'b0 ;
+		end
 		endcase
 		
 	end
@@ -77,13 +81,17 @@ begin
 		Data_count <= 1'b0 ;
 		R_W <= 1'b1 ;
 		end
-		
+		default
+		begin
+		Data_count <= 1'b0 ;
+		R_W <= 1'b0 ;
+		end
 		endcase
 		
 		end
 	
 	end
-	
+	dev <= devsel;
 end 
 
 endmodule
